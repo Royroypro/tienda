@@ -1,5 +1,5 @@
 <?php
-const BASE_URL = "https://sehuacho.com/";
+const BASE_URL = "https://tufibra.ddns.net/";
 const HOST = "sehuacho.com";
 const USER = "root";
 const PASS = "*Royner123123*";
