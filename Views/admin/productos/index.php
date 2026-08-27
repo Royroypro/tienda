@@ -79,7 +79,7 @@
                                 <select id="categoria" class="form-control" name="categoria">
                                     <option value="">Seleccionar</option>
                                     <?php foreach ($data['categorias'] as $categoria) { ?>
-                                        <option value="<?php echo $categoria['id']; ?>"><?php echo $categoria['categoria']; ?></option>
+                                        <option value="<?php echo (int) $categoria['id']; ?>"><?php echo e($categoria['categoria']); ?></option>
                                     <?php } ?>
                                 </select>
                             </div>

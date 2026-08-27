@@ -1,7 +1,10 @@
 <?php include "Views/template/header.php"; ?>
 <div class="card">
     <div class="card-body">
-        <a class="btn btn-danger mb-2" href="<?php echo BASE_URL . 'profile/salir'; ?>" role="button">Cerrar Sesion</a>
+        <form method="post" action="<?php echo BASE_URL . 'profile/salir'; ?>">
+            <input type="hidden" name="_csrf" value="<?php echo e(csrfToken()); ?>">
+            <button class="btn btn-danger mb-2" type="submit">Cerrar Sesión</button>
+        </form>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover align-middle" style="width: 100%;" id="tblPendientes">
                 <thead>

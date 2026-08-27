@@ -7,14 +7,15 @@ class ProductosModel extends Query{
     }
     public function getProductos($estado)
     {
-        $sql = "SELECT p.*, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.estado = $estado";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT p.*, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.estado = ?", [(int) $estado]);
     }
     
     public function getDatos($table)
     {
-        $sql = "SELECT * FROM $table WHERE estado = 1";
-        return $this->selectAll($sql);
+        if ($table !== 'categorias') {
+            throw new InvalidArgumentException('Tabla no permitida');
+        }
+        return $this->selectAll("SELECT * FROM categorias WHERE estado = 1");
     }
 
     public function registrar($nombre, $descripcion, $precio, $cantidad, $imagen, $categoria)
@@ -33,8 +34,7 @@ class ProductosModel extends Query{
 
     public function getProducto($idPro)
     {
-        $sql = "SELECT * FROM productos WHERE id = $idPro";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM productos WHERE id = ?", [(int) $idPro]);
     }
 
     public function modificar($nombre, $descripcion, $precio, $cantidad, $destino, $categoria, $id)

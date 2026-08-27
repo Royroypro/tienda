@@ -4,7 +4,7 @@ class Admin extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
     }
     public function index()
     {
@@ -18,32 +18,48 @@ class Admin extends Controller
     
     public function validar()
     {
+        $attempts = $_SESSION['admin_login_attempts'] ?? ['count' => 0, 'time' => time()];
+        if (time() - $attempts['time'] > 900) {
+            $attempts = ['count' => 0, 'time' => time()];
+        }
+        if ($attempts['count'] >= 5) {
+            http_response_code(429);
+            echo json_encode(['msg' => 'Demasiados intentos. Espera 15 minutos.', 'icono' => 'warning']);
+            exit;
+        }
         if (isset($_POST['email']) && isset($_POST['clave'])) {
             if (empty($_POST['email']) || empty($_POST['clave'])) {
                 $respuesta = array('msg' => 'todo los campos son requeridos', 'icono' => 'warning');
             } else {
-                $data = $this->model->getUsuario($_POST['email']);
+                $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+                $data = $email ? $this->model->getUsuario($email) : null;
                 if (empty($data)) {
-                    $respuesta = array('msg' => 'el usuario no existe', 'icono' => 'warning');
+                    $respuesta = array('msg' => 'Credenciales incorrectas', 'icono' => 'warning');
                 } else {
                     if ($data['tipo'] == 1) {
                         if (password_verify($_POST['clave'], $data['clave'])) {
+                            session_regenerate_id(true);
+                            unset($_SESSION['admin_login_attempts']);
                             $_SESSION['id_usuario'] = $data['id'];
                             $_SESSION['email'] = $data['correo'];
                             $_SESSION['nombre_usuario'] = $data['nombre'];
                             $_SESSION['tipo'] = $data['tipo'];
                             $respuesta = array('msg' => 'datos correcto', 'icono' => 'success');
                         } else {
-                            $respuesta = array('msg' => 'contraseña incorrecta', 'icono' => 'warning');
+                            $respuesta = array('msg' => 'Credenciales incorrectas', 'icono' => 'warning');
                         }
                     }else{
-                        $respuesta = array('msg' => 'tu eres un cliente', 'icono' => 'warning'); 
+                        $respuesta = array('msg' => 'Credenciales incorrectas', 'icono' => 'warning');
                     }
                     
                 }
             }
         } else {
             $respuesta = array('msg' => 'error desconocido', 'icono' => 'error');
+        }
+        if (($respuesta['icono'] ?? '') !== 'success') {
+            $attempts['count']++;
+            $_SESSION['admin_login_attempts'] = $attempts;
         }
         echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
         die();
@@ -70,12 +86,14 @@ class Admin extends Controller
     }
 
     public function topProductos(){
+        requireAdmin();
         $data = $this->model->topProductos();
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
 
     public function comprasMes(){
+        requireAdmin();
         $desde = date('Y') . '-01-01 00:00:00';
         $hasta = date('Y') . '-12-31 23:59:59';
         $data['pedido'] = $this->model->comprasMes($desde, $hasta);
@@ -112,6 +130,7 @@ class Admin extends Controller
 
     public function salir()
     {
+        requirePost();
         session_destroy();
         header('Location: ' . BASE_URL);
     }

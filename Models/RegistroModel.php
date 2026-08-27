@@ -7,8 +7,7 @@ class RegistroModel extends Query{
     }
     public function getUsuario($email)
     {
-        $sql = "SELECT * FROM usuarios WHERE correo = '$email'";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM usuarios WHERE correo = ?", [$email]);
     }
 
     public function registrar($email, $nombre, $clave, $tipo) {
@@ -18,8 +17,7 @@ class RegistroModel extends Query{
 
     public function getProducto($id)
     {
-        $sql = "SELECT * FROM productos WHERE id = $id";      
-        return $this->select($sql);
+        return $this->select("SELECT * FROM productos WHERE id = ? FOR UPDATE", [(int) $id]);
     }
 
     public function registrarPedido($transaccion, $total, $nombre,
@@ -39,6 +37,11 @@ class RegistroModel extends Query{
     {
         $sql = "UPDATE productos SET cantidad = ?, ventas=? WHERE id = ?";
         return $this->save($sql, [$cantidad, $ventas, $idProducto]);
+    }
+
+    public function existeTransaccion($transaccion)
+    {
+        return $this->select("SELECT id FROM ventas WHERE transaccion = ? LIMIT 1", [$transaccion]);
     }
     
 }

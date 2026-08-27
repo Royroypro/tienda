@@ -4,7 +4,7 @@ class Usuarios extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
         if (empty($_SESSION['tipo']) || $_SESSION['tipo'] == 2) {
             header('Location: '. BASE_URL . 'admin');
             exit;
@@ -78,6 +78,7 @@ class Usuarios extends Controller
     //eliminar user
     public function delete($idUser)
     {
+        requirePost();
         if (is_numeric($idUser)) {
             $data = $this->model->eliminar($idUser);
             if ($data == 1) {

@@ -7,8 +7,7 @@ class CategoriasModel extends Query{
     }
     public function getCategorias($estado)
     {
-        $sql = "SELECT * FROM categorias WHERE estado = $estado";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM categorias WHERE estado = ?", [(int) $estado]);
     }
 
     public function registrar($categoria, $imagen)
@@ -19,8 +18,7 @@ class CategoriasModel extends Query{
     }
     public function verificarCategoria($categoria)
     {
-        $sql = "SELECT categoria FROM categorias WHERE categoria = '$categoria' AND estado = 1";
-        return $this->select($sql);
+        return $this->select("SELECT categoria FROM categorias WHERE categoria = ? AND estado = 1", [$categoria]);
     }
 
     public function eliminar($idCat)
@@ -32,8 +30,7 @@ class CategoriasModel extends Query{
 
     public function getCatoria($idCat)
     {
-        $sql = "SELECT * FROM categorias WHERE id = $idCat";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM categorias WHERE id = ?", [(int) $idCat]);
     }
 
     public function modificar($categoria, $imagen, $id)

@@ -98,7 +98,7 @@ function eliminarPro(idPro) {
     if (result.isConfirmed) {
       const url = base_url + "productos/delete/" + idPro;
       const http = new XMLHttpRequest();
-      http.open("GET", url, true);
+      http.open("POST", url, true);
       http.send();
       http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -119,7 +119,7 @@ function editPro(idPro) {
   const http = new XMLHttpRequest();
   
   // Open the request
-  http.open("GET", url, true);
+  http.open("POST", url, true);
   
   // Send the request
   http.send();

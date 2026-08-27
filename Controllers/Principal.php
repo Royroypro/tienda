@@ -11,11 +11,12 @@ class Principal extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
     }
     public function index()
     {
-        $data['title'] = 'Pagina Principal';
+        $data['title'] = 'Seguridad electrónica, cámaras y cercos eléctricos en Huacho';
+        $data['description'] = 'Venta e instalación de cámaras de seguridad, cercos eléctricos, equipos informáticos y servicios técnicos en Huacho.';
         $data['negocio'] = $this->model->getNegocio();
         $data['categorias'] = $this->model->getCategorias();
         $data['destacados'] = $this->model->getProductosDestacados();
@@ -26,7 +27,8 @@ class Principal extends Controller
 
     public function productos($page)
     {
-        $data['title'] = 'Tu carrito';
+        $data['title'] = 'Productos y servicios de seguridad electrónica';
+        $data['description'] = 'Conoce nuestros productos, cámaras, cercos eléctricos y servicios técnicos disponibles en Huacho.';
         //paginacion
         $pagina = (empty($page)) ? 1 : $page;
         $porPagina = 8;
@@ -60,10 +62,16 @@ class Principal extends Controller
 
     public function categoria($categoria)
     {
-        $data['title'] = 'Tu carrito';
         //VERIFICAR SI EXISTE UNA BUSQUEDA
         $search = (!empty($_GET['search'])) ? strClean($_GET['search']) : '';
         $data['categoria'] = $this->model->getCategoria($categoria);
+        if (empty($data['categoria'])) {
+            http_response_code(404);
+            header('Location: ' . BASE_URL . 'errors');
+            exit;
+        }
+        $data['title'] = 'Productos de ' . $data['categoria']['categoria'];
+        $data['description'] = 'Productos y servicios de ' . $data['categoria']['categoria'] . ' disponibles en Seguridad Electrónica Huacho.';
         $data['categorias'] = $this->model->getCategorias();
         $data['productos'] = $this->model->getProductosCategoria($search, $data['categoria']['id']);
         $data['negocio'] = $this->model->getNegocio();
@@ -72,7 +80,8 @@ class Principal extends Controller
 
     public function carrito()
     {
-        $data['title'] = 'Tu carrito';
+        $data['title'] = 'Carrito de compra por WhatsApp';
+        $data['description'] = 'Revisa tu pedido y solicita una cotización directamente por WhatsApp.';
         $data['categorias'] = $this->model->getCategorias();
         $data['negocio'] = $this->model->getNegocio();
         $this->views->getView('principal', "carrito", $data);
@@ -80,39 +89,32 @@ class Principal extends Controller
 
     public function order()
     {
-        $data['title'] = 'Tu carrito';
-        $data['categorias'] = $this->model->getCategorias();
-        $data['negocio'] = $this->model->getNegocio();
-        $this->views->getView('principal', "order", $data);
+        header('Location: ' . BASE_URL . 'principal/carrito');
+        exit;
     }
 
     public function address()
     {
-        $data['title'] = 'Tu carrito';
-        $data['categorias'] = $this->model->getCategorias();
-        $data['negocio'] = $this->model->getNegocio();
-        $this->views->getView('principal', "address", $data);
+        header('Location: ' . BASE_URL . 'principal/carrito');
+        exit;
     }
 
     public function pagos()
     {
-        $data['title'] = 'Tu carrito';
-        $data['categorias'] = $this->model->getCategorias();
-        $data['negocio'] = $this->model->getNegocio();
-        $this->views->getView('principal', "pagos", $data);
+        header('Location: ' . BASE_URL . 'principal/carrito');
+        exit;
     }
 
     public function complete()
     {
-        $data['title'] = 'Tu carrito';
-        $data['categorias'] = $this->model->getCategorias();
-        $data['negocio'] = $this->model->getNegocio();
-        $this->views->getView('principal', "complete", $data);
+        header('Location: ' . BASE_URL . 'principal/carrito');
+        exit;
     }
 
     public function contactos()
     {
-        $data['title'] = 'Tu carrito';
+        $data['title'] = 'Contacto';
+        $data['description'] = 'Contacta con Seguridad Electrónica Huacho para instalaciones, soporte y cotizaciones.';
         $data['negocio'] = $this->model->getNegocio();
         $data['categorias'] = $this->model->getCategorias();
         $this->views->getView('principal', "contactos", $data);
@@ -126,20 +128,30 @@ class Principal extends Controller
         $total = 0.00;
         if (!empty($json)) {
             foreach ($json as $producto) {
-                $result = $this->model->getProducto($producto['id']);
+                $id = filter_var($producto['id'] ?? null, FILTER_VALIDATE_INT);
+                $cantidad = filter_var($producto['cantidad'] ?? null, FILTER_VALIDATE_INT);
+                if (!$id || !$cantidad || $cantidad < 1 || $cantidad > 100) {
+                    continue;
+                }
+                $result = $this->model->getProducto($id);
+                if (empty($result) || (int) $result['estado'] !== 1) {
+                    continue;
+                }
                 $data['id'] = $result['id'];
                 $data['nombre'] = $result['nombre'];
                 $data['precio'] = $result['precio'];
-                $data['cantidad'] = $producto['cantidad'];
+                $data['cantidad'] = min($cantidad, (int) $result['cantidad']);
+                if ($data['cantidad'] < 1) {
+                    continue;
+                }
                 $data['imagen'] = $result['imagen'];
-                $subTotal = $data['precio'] * $producto['cantidad'];
+                $subTotal = $data['precio'] * $data['cantidad'];
                 $data['subTotal'] = number_format($subTotal, 2);
                 array_push($array['productos'], $data);
                 $total += $subTotal;
             }
         }
         $array['total'] = number_format($total, 2);
-        $array['totalPaypal'] = number_format($total, 2, '.', '');
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
         die();
     }
@@ -155,7 +167,7 @@ class Principal extends Controller
     {
         $data['title'] = 'Restablecer Contraseña';
         $data['seguridad'] = $this->model->verificarToken($token);
-        if ($data['seguridad']['token'] != $token || empty($token) || $data['seguridad']['token'] == null) {
+        if (empty($token) || empty($data['seguridad']) || !hash_equals((string) $data['seguridad']['token'], (string) $token)) {
             header('Location: ' . BASE_URL);
             exit;
         }
@@ -164,12 +176,16 @@ class Principal extends Controller
 
     public function enviarMail($correo)
     {
+        $correo = filter_var($correo, FILTER_VALIDATE_EMAIL);
+        if (!$correo) {
+            echo json_encode(['msg' => 'Si el correo existe, recibirás instrucciones', 'type' => 'success']);
+            exit;
+        }
         $verificar = $this->model->verificarCorreo($correo, 1);
         if (!empty($verificar)) {
             $negocio = $this->model->getNegocio();
             $mail = new PHPMailer(true);
-            $fecha = date('YmdHis');
-            $token = md5($fecha);
+            $token = bin2hex(random_bytes(32));
             try {
                 //Server settings
                 //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
@@ -191,7 +207,7 @@ class Principal extends Controller
                 $mail->CharSet = 'UTF-8';                                  //Set email format to HTML
                 $mail->Subject = 'Restablecer Contraseña - ' . TITLE;
                 $mail->Body    = 'Has pedido restablecer tu contraseña, si no has sido omite este mensaje <br />
-            Para cambiar <a href="' . BASE_URL . 'principal/reset/' . $token . '">CLICK AQUI</a>';
+            Para cambiar <a href="' . BASE_URL . 'principal/reset/' . rawurlencode($token) . '">CLICK AQUI</a>';
 
                 $mail->send();
 
@@ -202,10 +218,11 @@ class Principal extends Controller
                     $res = array('msg' => 'ERROR AL REGISTRAR EL TOKEN', 'type' => 'error');
                 }
             } catch (Exception $e) {
-                $res = array('msg' => 'ERROR AL ENVIAR EL CORREO: ' . $mail->ErrorInfo, 'type' => 'error');
+                error_log('Error SMTP al restablecer contraseña: ' . $mail->ErrorInfo);
+                $res = array('msg' => 'No se pudo procesar la solicitud', 'type' => 'error');
             }
         } else {
-            $res = array('msg' => 'EL CORREO NO ESTA REGISTRADO', 'type' => 'warning');
+            $res = array('msg' => 'Si el correo existe, recibirás instrucciones', 'type' => 'success');
         }
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
         die();
@@ -213,10 +230,10 @@ class Principal extends Controller
 
     public function cambiarClave()
     {
-        $nueva = strClean($_POST['nueva']);
-        $confirmar = strClean($_POST['confirmar']);
+        $nueva = (string) ($_POST['nueva'] ?? '');
+        $confirmar = (string) ($_POST['confirmar'] ?? '');
         $token = strClean($_POST['token']);
-        if (empty($nueva) || empty($confirmar) || empty($token)) {
+        if (empty($nueva) || empty($confirmar) || empty($token) || strlen($nueva) < 10) {
             $res = array('msg' => 'TODO LOS CAMPOS CON * SON REQUERIDOS', 'type' => 'warning');
         } else {
             if ($nueva != $confirmar) {

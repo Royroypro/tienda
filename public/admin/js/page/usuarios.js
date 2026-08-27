@@ -93,7 +93,7 @@ function eliminarUser(idUsuario) {
     if (result.isConfirmed) {
       const url = base_url + "usuarios/delete/" + idUsuario;
       const http = new XMLHttpRequest();
-      http.open("GET", url, true);
+      http.open("POST", url, true);
       http.send();
       http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -114,7 +114,7 @@ function editUser(idUsuario) {
   //hacer una instancia del objeto XMLHttpRequest
   const http = new XMLHttpRequest();
   //Abrir una Conexion - POST - GET
-  http.open("GET", url, true);
+  http.open("POST", url, true);
   //Enviar Datos
   http.send();
   //verificar estados

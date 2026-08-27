@@ -17,6 +17,7 @@
 
 <!-- jQuery  -->
 <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.min.js"></script>
+<script src="<?php echo BASE_URL; ?>public/js/security.js"></script>
 <script src="<?php echo BASE_URL; ?>public/admin/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo BASE_URL; ?>public/admin/js/modernizr.min.js"></script>
 <script src="<?php echo BASE_URL; ?>public/admin/js/detect.js"></script>

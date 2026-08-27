@@ -44,7 +44,7 @@ function anularVenta(idVenta) {
       //hacer una instancia del objeto XMLHttpRequest
       const http = new XMLHttpRequest();
       //Abrir una Conexion - POST - GET
-      http.open("GET", url, true);
+      http.open("POST", url, true);
       //Enviar Datos
       http.send();
       //verificar estados

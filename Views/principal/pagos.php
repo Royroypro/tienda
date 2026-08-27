@@ -34,14 +34,16 @@
                                 </div>
                             </div>
                             <!--<div class="col-md-4">
-                                <div id="paypal-button-container"></div>
+                                <div class="alert alert-info">
+                                    Los pagos en línea están desactivados. Los pedidos se coordinan únicamente por WhatsApp.
+                                </div>
                             </div>-->
 
                             <div class="shoping__checkout">
                     <h5>Pedir por Whatsapp</h5>
           
                     
-                    <input type="hidden" id="whatsapp-negocio" value="<?php echo $data['negocio']['whatsapp']; ?>">
+                    <input type="hidden" id="whatsapp-negocio" value="<?php echo e($data['negocio']['whatsapp']); ?>">
                     <a href="#" class="btn btn-success btn-block" id="whatsapp-negocio">WHATSAPP</a>
                 </div>
 
@@ -56,8 +58,6 @@
 <?php include "Views/template/footer.php"; ?>
 
 <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.min.js"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=<?php echo CLIENT_ID; ?>&currency=USD"></script>
-<script src="<?php echo BASE_URL; ?>public/js/pagos.js"></script>
 </body>
 
 </html>

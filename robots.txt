@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /Config/
+Disallow: /Controllers/
+Disallow: /Models/
+Disallow: /Views/
+Disallow: /api_1000/
+Disallow: /principal/login
+Disallow: /profile
+
+Sitemap: https://sehuacho.com/sitemap.xml

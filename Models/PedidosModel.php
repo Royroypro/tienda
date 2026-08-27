@@ -7,8 +7,7 @@ class PedidosModel extends Query{
     }
     public function getPedidos($tipo)
     {
-        $sql = "SELECT * FROM ventas WHERE tipo = $tipo";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM ventas WHERE tipo = ?", [(int) $tipo]);
     }
     public function actualizarEstado($proceso, $idPedido)
     {
@@ -18,8 +17,7 @@ class PedidosModel extends Query{
     }
     public function getDetalle($id_venta)
     {
-        $sql = "SELECT * FROM detalle_ventas WHERE id_venta = $id_venta";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM detalle_ventas WHERE id_venta = ?", [(int) $id_venta]);
     }
     
 }

@@ -1,13 +1,35 @@
 <?php
 require_once 'Config/Config.php';
-$ruta = !empty($_GET['url']) ? $_GET['url'] : "principal/index";
+require_once 'Config/Helpers.php';
+
+$production = APP_ENV === 'production';
+ini_set('display_errors', $production ? '0' : '1');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+
+startSecureSession();
+csrfToken();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    validateCsrf();
+}
+
+$requestPath = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
+if ($requestPath === '' || $requestPath === 'index.php') {
+    $requestPath = 'principal/index';
+}
+$ruta = !empty($_GET['url']) ? $_GET['url'] : $requestPath;
 $array = explode("/", $ruta);
-$controller = ucfirst($array[0]);
+$controller = ucfirst(preg_replace('/[^a-zA-Z0-9_]/', '', $array[0]));
 $metodo = "index";
 $parametro = "";
 if (!empty($array[1])) {
     if (!empty($array[1] != "")) {
-        $metodo = $array[1];
+        $metodo = preg_replace('/[^a-zA-Z0-9_]/', '', $array[1]);
     }
 }
 if (!empty($array[2])) {
@@ -19,7 +41,6 @@ if (!empty($array[2])) {
     }
 }
 require_once 'Config/App/Autoload.php';
-require_once 'Config/Helpers.php';
 $dirControllers = "Controllers/" . $controller . ".php";
 if (file_exists($dirControllers)) {
     require_once $dirControllers;

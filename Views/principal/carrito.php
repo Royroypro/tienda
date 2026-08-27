@@ -57,16 +57,15 @@
                 </div>
             </div> -->
                 <div class="shoping__checkout">
-                    <h5>Cart Total</h5>
+                    <h5>Resumen del pedido</h5>
                     
                     <ul>
                         <!-- <li>Subtotal <span>$454.98</span></li> -->
                         <li>Total <span id="total">S/.454.98</span></li>
                     </ul>
-                    <!--<a href="<?php //echo BASE_URL . 'principal/order'; ?>" class="primary-btn mb-2">CHECKOUT</a>-->
-                    <h6>Pedir por Whatsapp</h6>
-                    <input type="hidden" id="whatsapp-negocio" value="<?php echo $data['negocio']['whatsapp']; ?>">
-                    <a href="#" class="btn btn-success btn-block" id="carrito-whatsapp">WHATSAPP</a>
+                    <p class="whatsapp-order-copy">No realizamos cobros en línea. Envíanos tu pedido y coordinaremos disponibilidad, instalación y forma de pago por WhatsApp.</p>
+                    <input type="hidden" id="whatsapp-negocio" value="<?php echo e($data['negocio']['whatsapp']); ?>">
+                    <a href="#" class="btn btn-success btn-block whatsapp-checkout" id="carrito-whatsapp"><i class="fa fa-whatsapp"></i> Enviar pedido por WhatsApp</a>
                 </div>
             </div>
         </div>

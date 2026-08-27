@@ -1,5 +1,15 @@
 <?php include "Views/template/header.php"; ?>
 
+<section class="trust-strip" aria-label="Ventajas del servicio">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 trust-item"><i class="fa fa-map-marker"></i><div><strong>Atención local</strong><span>Huacho y alrededores</span></div></div>
+            <div class="col-md-4 trust-item"><i class="fa fa-whatsapp"></i><div><strong>Cotización directa</strong><span>Respuesta personalizada por WhatsApp</span></div></div>
+            <div class="col-md-4 trust-item"><i class="fa fa-wrench"></i><div><strong>Instalación y soporte</strong><span>Soluciones para hogar y negocio</span></div></div>
+        </div>
+    </div>
+</section>
+
 <!-- Categories Section Begin -->
 <section class="categories">
     <div class="container">
@@ -8,7 +18,7 @@
                 <?php foreach ($data['categorias'] as $categoria) { ?>
                     <div class="col-lg-3">
                         <div class="categories__item set-bg" data-setbg="<?php echo BASE_URL . 'public/img/categorias/' . $categoria['imagen']; ?>">
-                            <h5><a href="#"><?php echo $categoria['categoria']; ?></a></h5>
+                            <h5><a href="<?php echo BASE_URL . 'principal/categoria/' . rawurlencode($categoria['categoria']); ?>"><?php echo e($categoria['categoria']); ?></a></h5>
                         </div>
                     </div>
                 <?php } ?>
@@ -30,7 +40,7 @@
                     <ul>
                         <li class="active" data-filter="*">Todas</li>
                         <?php foreach ($data['categorias'] as $categoria) { ?>
-                            <li data-filter=".cat_<?php echo $categoria['id']; ?>"><?php echo $categoria['categoria']; ?></li>
+                            <li data-filter=".cat_<?php echo (int) $categoria['id']; ?>"><?php echo e($categoria['categoria']); ?></li>
                         <?php } ?>
                     </ul>
                 </div>
@@ -38,18 +48,18 @@
         </div>
         <div class="row featured__filter">
             <?php foreach ($data['destacados'] as $producto) { ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 mix cat_<?php echo $producto['id_categoria']; ?> fresh-meat">
+                <div class="col-lg-3 col-md-4 col-sm-6 mix cat_<?php echo (int) $producto['id_categoria']; ?> fresh-meat">
                     <div class="featured__item">
-                        <div class="featured__item__pic set-bg" data-setbg="<?php echo BASE_URL . 'public/img/productos/' . $producto['imagen']; ?>">
+                        <div class="featured__item__pic set-bg" data-setbg="<?php echo BASE_URL . 'public/img/productos/' . rawurlencode(basename($producto['imagen'])); ?>">
                             <ul class="featured__item__pic__hover">
-                                <li><a href="https://api.whatsapp.com/send?phone=<?php echo $data['negocio']['whatsapp'] . '&text=Productos= ' . $producto['nombre'] . ' Precio(' . $producto['precio'] . ')'; ?>" target="_blank"><i class="fa fa-whatsapp"></i></a></li>
+                                <li><a href="https://api.whatsapp.com/send?<?php echo http_build_query(['phone' => $data['negocio']['whatsapp'], 'text' => 'Producto: ' . $producto['nombre'] . ' Precio (' . $producto['precio'] . ')']); ?>" target="_blank" rel="noopener"><i class="fa fa-whatsapp"></i></a></li>
                                 <!-- <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
-                                <li><a href="#" stock="<?php echo $producto['cantidad']; ?>" class="producto-agregar" id="<?php echo $producto['id']; ?>"><i class="fa fa-shopping-cart"></i></a></li>
+                                <li><a href="#" stock="<?php echo (int) $producto['cantidad']; ?>" class="producto-agregar" id="<?php echo (int) $producto['id']; ?>"><i class="fa fa-shopping-cart"></i></a></li>
                             </ul>
                         </div>
                         <div class="featured__item__text">
-                            <h6><a href="#"><?php echo $producto['nombre']; ?></a></h6>
-                            <h5>S/<?php echo $producto['precio']; ?></h5>
+                            <h6><a href="#"><?php echo e($producto['nombre']); ?></a></h6>
+                            <h5>S/<?php echo e(number_format((float) $producto['precio'], 2)); ?></h5>
                         </div>
                     </div>
                 </div>
@@ -65,12 +75,12 @@
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <div class="banner__pic">
-                    <img src="<?php echo BASE_URL; ?>public/img/banner/banner-1.jpg" alt="">
+                    <img src="<?php echo BASE_URL; ?>public/img/banner/banner-1.jpg" alt="Cámaras de seguridad para hogares y negocios" loading="lazy">
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <div class="banner__pic">
-                    <img src="<?php echo BASE_URL; ?>public/img/banner/banner-2.jpg" alt="">
+                    <img src="<?php echo BASE_URL; ?>public/img/banner/banner-2.jpg" alt="Instalación de soluciones de seguridad electrónica" loading="lazy">
                 </div>
             </div>
         </div>

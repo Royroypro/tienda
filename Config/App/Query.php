@@ -5,19 +5,19 @@ class Query extends Conexion{
         $this->pdo = new Conexion();
         $this->con = $this->pdo->conect();
     }
-    public function select(string $sql)
+    public function select(string $sql, array $datos = [])
     {
         $this->sql = $sql;
         $resul = $this->con->prepare($this->sql);
-        $resul->execute();
+        $resul->execute($datos);
         $data = $resul->fetch(PDO::FETCH_ASSOC);
         return $data;
     }
-    public function selectAll(string $sql)
+    public function selectAll(string $sql, array $datos = [])
     {
         $this->sql = $sql;
         $resul = $this->con->prepare($this->sql);
-        $resul->execute();
+        $resul->execute($datos);
         $data = $resul->fetchAll(PDO::FETCH_ASSOC);
         return $data;
     }
@@ -57,6 +57,21 @@ class Query extends Conexion{
         $result = $this->con->prepare($sql);
         $result->execute();
         return $result->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function beginTransaction()
+    {
+        return $this->con->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->con->commit();
+    }
+
+    public function rollBack()
+    {
+        return $this->con->inTransaction() ? $this->con->rollBack() : false;
     }
 }
 ?>

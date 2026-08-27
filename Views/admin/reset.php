@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <title>Login</title>
@@ -51,7 +52,7 @@
 
                             <div class="p-2">
                                 <form class="form-horizontal m-t-20" id="formulario" autocomplete="off">
-                                    <input type="hidden" id="token" name="token" value="<?php echo $data['seguridad']['token']; ?>">
+                                    <input type="hidden" id="token" name="token" value="<?php echo e($data['seguridad']['token']); ?>">
                                     <div class="form-group row">
                                         <div class="col-12">
                                             <input class="form-control" id="nueva" name="nueva" type="password" required="" placeholder="Nueva clave">
@@ -86,6 +87,7 @@
 
     <!-- jQuery  -->
     <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/js/security.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/modernizr.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.slimscroll.js"></script>

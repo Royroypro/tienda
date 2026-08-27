@@ -1,1 +1,4 @@
 /vendor
+/Config/Config.local.php
+/mistrabajos/archivos/*
+!/mistrabajos/archivos/.htaccess

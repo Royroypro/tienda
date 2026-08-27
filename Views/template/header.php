@@ -1,23 +1,57 @@
+<?php
+$pageTitle = trim((string) ($data['title'] ?? 'Inicio'));
+$siteName = 'Seguridad Electrónica Huacho';
+$seoTitle = stripos($pageTitle, 'Seguridad Electrónica Huacho') === false
+    ? $pageTitle . ' | ' . $siteName
+    : $pageTitle;
+$seoDescription = (string) ($data['description'] ?? 'Venta e instalación de cámaras de seguridad, cercos eléctricos y soluciones de seguridad para hogares y negocios en Huacho.');
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$canonicalUrl = rtrim(BASE_URL, '/') . ($requestPath === '/' ? '/' : '/' . ltrim($requestPath, '/'));
+$isHome = rtrim($requestPath, '/') === '';
+$isCart = rtrim($requestPath, '/') === '/principal/carrito';
+$businessName = (string) ($data['negocio']['nombre'] ?? $siteName);
+$businessPhone = (string) ($data['negocio']['telefono'] ?? '');
+$businessEmail = (string) ($data['negocio']['correo'] ?? '');
+$businessAddress = (string) ($data['negocio']['direccion'] ?? 'Huacho, Perú');
+$structuredData = [
+    '@context' => 'https://schema.org',
+    '@type' => 'LocalBusiness',
+    'name' => $businessName,
+    'url' => BASE_URL,
+    'logo' => BASE_URL . 'public/img/logo.png',
+    'image' => BASE_URL . 'public/img/camaras-de-seguridad-que-convienen-para-casa-o-negocio.jpg',
+    'telephone' => $businessPhone,
+    'email' => $businessEmail,
+    'address' => [
+        '@type' => 'PostalAddress',
+        'streetAddress' => $businessAddress,
+        'addressLocality' => 'Huacho',
+        'addressCountry' => 'PE',
+    ],
+];
+?>
 <!DOCTYPE html>
-<html lang="zxx">
-
+<html lang="es">
 <head>
-
-<meta property="og:title" content="Seguridad Electrónica Huacho" />
-<meta property="og:description" content="Camaras de Seguridad y Cercos Electricos para Hogar y Negocios" />
-<meta property="og:image" content="<?php echo BASE_URL; ?>public/img/camaras-de-seguridad-que-convienen-para-casa-o-negocio.jpg" />
-<meta property="og:url" content="<?php echo BASE_URL; ?>" />
-<meta property="og:type" content="website" />
-
-
-
-
     <meta charset="UTF-8">
-    <meta name="description" content="Ogani Template">
-    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
+    <meta name="description" content="<?php echo e($seoDescription); ?>">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>SEGURIDAD ELECTRONICA HUACHO</title>
+    <link rel="canonical" href="<?php echo e($canonicalUrl); ?>">
+    <meta property="og:locale" content="es_PE">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<?php echo e($siteName); ?>">
+    <meta property="og:title" content="<?php echo e($seoTitle); ?>">
+    <meta property="og:description" content="<?php echo e($seoDescription); ?>">
+    <meta property="og:image" content="<?php echo BASE_URL; ?>public/img/camaras-de-seguridad-que-convienen-para-casa-o-negocio.jpg">
+    <meta property="og:url" content="<?php echo e($canonicalUrl); ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo e($seoTitle); ?>">
+    <meta name="twitter:description" content="<?php echo e($seoDescription); ?>">
+    <title><?php echo e($seoTitle); ?></title>
+    <script type="application/ld+json"><?php echo json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP); ?></script>
     <link rel="shortcut icon" href="<?php echo BASE_URL; ?>public/img/favicon.ico" type="image/x-icon">
 
     <!-- Google Font -->
@@ -49,7 +83,7 @@
     <div class="humberger__menu__overlay"></div>
     <div class="humberger__menu__wrapper">
         <div class="humberger__menu__logo">
-            <a href="#"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="" width="50"></a>
+            <a href="<?php echo BASE_URL; ?>"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Seguridad Electrónica Huacho" width="50"></a>
         </div>
         <div class="humberger__menu__cart">
             <ul>
@@ -83,7 +117,7 @@
         </div>
         <div class="humberger__menu__contact">
             <ul>
-                <li><i class="fa fa-envelope"></i> <?php echo $data['negocio']['correo']; ?></li>
+                <li><i class="fa fa-envelope"></i> <?php echo e($data['negocio']['correo']); ?></li>
                 <li>SEGURIDAD ELECTRONICA HUACHO</li>
             </ul>
         </div>
@@ -98,7 +132,7 @@
                     <div class="col-lg-6 col-md-6">
                         <div class="header__top__left">
                             <ul>
-                                <li><i class="fa fa-envelope"></i> <?php echo $data['negocio']['correo']; ?></li>
+                                <li><i class="fa fa-envelope"></i> <?php echo e($data['negocio']['correo']); ?></li>
                                 <li>SEGURIDAD ELECTRONICA HUACHO</li>
                             </ul>
                         </div>
@@ -127,7 +161,7 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="header__logo">
-                        <a href="<?php echo BASE_URL; ?>"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="LOGO" width="50"></a>
+                        <a href="<?php echo BASE_URL; ?>"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Seguridad Electrónica Huacho" width="50"></a>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -157,7 +191,7 @@
     <!-- Header Section End -->
     <!-- Hero Section Begin -->
     <div class="d-block d-sm-none" style="text-align: center; font-size: 0rem; font-weight: bold; margin-bottom: 2.5rem; color: #326CB7;"><span style="font-size: 1rem;">SEGURIDAD ELECTRONICA HUACHO</span></div>
-    <section class="hero <?php echo ($data['title'] == 'Tu carrito') ? 'hero-normal' : ''; ?>">
+    <section class="hero <?php echo $isCart ? 'hero-normal' : ''; ?>">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
@@ -169,7 +203,7 @@
                         </div>
                         <ul>
                             <?php foreach ($data['categorias'] as $categoria) { ?>
-                                <li><a href="<?php echo BASE_URL . 'principal/categoria/' . $categoria['categoria']; ?>"><?php echo $categoria['categoria']; ?></a></li>
+                                <li><a href="<?php echo BASE_URL . 'principal/categoria/' . rawurlencode($categoria['categoria']); ?>"><?php echo e($categoria['categoria']); ?></a></li>
                             <?php } ?>
                         </ul>
                     </div>
@@ -187,19 +221,19 @@
                                 <i class="fa fa-phone"></i>
                             </div>
                             <div class="hero__search__phone__text">
-                                <h5><?php echo $data['negocio']['telefono']; ?></h5>
-                                <span><?php echo $data['negocio']['direccion']; ?></span>
+                                <h5><?php echo e($data['negocio']['telefono']); ?></h5>
+                                <span><?php echo e($data['negocio']['direccion']); ?></span>
                             </div>
                         </div>
                     </div>
-                    <div style="text-align:  font-size: 1.5rem; color: red">Nota: Algunos servicios solo estan disponibles para Huacho y alrededores</div>
-                    <?php if ($data['title'] == 'Pagina Principal') { ?>
+                    <p class="service-area-note"><i class="fa fa-map-marker"></i> Atención e instalación en Huacho y alrededores</p>
+                    <?php if ($isHome) { ?>
                         
                         <div class="hero__item set-bg" data-setbg="<?php echo BASE_URL; ?>public/img/hero/banner.jpg">
                             <div class="hero__text">
                                 <span style="color: #326CB7">SEGURIDAD PARA TU NEGOCIO Y HOGAR</span>
-                                <h2>CAMARAS <br />y  Cercos Electricos</h2>
-                                <p>Venta e Intalaciones</p>
+                                <h1>Cámaras de seguridad<br>y cercos eléctricos</h1>
+                                <p>Venta, instalación y asesoría para hogares y negocios.</p>
                                 <a href="<?php echo BASE_URL . 'principal/productos'; ?>" class="primary-btn">Ver productos</a>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ class Pedidos extends Controller
         // Llama al constructor de la clase padre
         parent::__construct();
         // Inicia la sesion
-        session_start();
+        startSecureSession();
         // Verifica si la sesion esta seteada y si es administrador
         if (empty($_SESSION['tipo']) || $_SESSION['tipo'] == 2) {
             // Redirige al login de administrador
@@ -31,7 +31,7 @@ class Pedidos extends Controller
             $productos = $this->model->getDetalle($data[$i]['id']);
             for ($j=0; $j < count($productos); $j++) { 
                 // Agrega cada producto a la lista
-                $data[$i]['productos'] .= '<li class="list-group-item">'.$productos[$j]['cantidad'] . " x " . $productos[$j]['producto'] . " ------ " . $productos[$j]['precio'].'</li>';
+                $data[$i]['productos'] .= '<li class="list-group-item">' . (int) $productos[$j]['cantidad'] . ' x ' . e($productos[$j]['producto']) . ' ------ ' . e($productos[$j]['precio']) . '</li>';
             }
             // Verifica el estado del pedido y agrega el estado correspondiente
             if ($data[$i]['proceso'] == 1) {
@@ -48,6 +48,7 @@ class Pedidos extends Controller
     }
     public function update($idPedido)
     {
+        requirePost();
         // Verifica si el id es numerico
         if (is_numeric($idPedido)) {
             // Actualiza el estado del pedido a 2 (completado)
@@ -66,4 +67,3 @@ class Pedidos extends Controller
     }
 
 }
-

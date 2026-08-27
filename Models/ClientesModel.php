@@ -44,8 +44,7 @@ class ClientesModel extends Query{
     ##### ADMIN CLIENTES ######
     public function getClientes($tipo, $estado)
     {
-        $sql = "SELECT id, correo, nombre, apellido, direccion FROM usuarios WHERE tipo = $tipo AND estado = $estado";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT id, correo, nombre, apellido, direccion FROM usuarios WHERE tipo = ? AND estado = ?", [(int) $tipo, (int) $estado]);
     }
     public function registrar($correo, $nombre, $apellido, $direccion, $tipo)
     {
@@ -56,12 +55,17 @@ class ClientesModel extends Query{
 
     public function verificarCampo($item, $valor, $id)
     {
+        if (!in_array($item, ['correo'], true)) {
+            throw new InvalidArgumentException('Campo no permitido');
+        }
         if ($id == 0) {
-            $sql = "SELECT id FROM usuarios WHERE $item = '$valor' AND $item != null AND estado = 1";
+            $sql = "SELECT id FROM usuarios WHERE $item = ? AND $item IS NOT NULL AND estado = 1";
+            $params = [$valor];
         } else {
-            $sql = "SELECT id FROM usuarios WHERE $item = '$valor' AND id != $id AND $item != null AND estado = 1";
+            $sql = "SELECT id FROM usuarios WHERE $item = ? AND id != ? AND $item IS NOT NULL AND estado = 1";
+            $params = [$valor, (int) $id];
         }        
-        return $this->select($sql);
+        return $this->select($sql, $params);
     }
 
     public function eliminar($estado, $idCliente)
@@ -72,8 +76,7 @@ class ClientesModel extends Query{
     }
     public function editar($idCliente)
     {
-        $sql = "SELECT * FROM usuarios WHERE id = $idCliente";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM usuarios WHERE id = ?", [(int) $idCliente]);
     }
 
     public function modificar($correo, $nombre, $apellido, $direccion, $id)

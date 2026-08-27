@@ -7,20 +7,17 @@ class AdminModel extends Query{
     }
     public function getUsuario($correo)
     {
-        $sql = "SELECT * FROM usuarios WHERE correo = '$correo' AND estado = 1";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM usuarios WHERE correo = ? AND estado = 1", [$correo]);
     }
 
     public function getPedidos($proceso, $year)
     {
-        $sql = "SELECT SUM(total) AS total FROM ventas WHERE YEAR(fecha) = $year AND proceso = $proceso AND tipo = 1";
-        return $this->select($sql);
+        return $this->select("SELECT SUM(total) AS total FROM ventas WHERE YEAR(fecha) = ? AND proceso = ? AND tipo = 1", [$year, $proceso]);
     }
 
     public function getPedidosGrafico($year)
     {
-        $sql = "SELECT SUM(total) AS total FROM ventas WHERE YEAR(fecha) = $year AND tipo = 1";
-        return $this->select($sql);
+        return $this->select("SELECT SUM(total) AS total FROM ventas WHERE YEAR(fecha) = ? AND tipo = 1", [$year]);
     }
 
     public function topProductos()
@@ -43,8 +40,8 @@ class AdminModel extends Query{
         SUM(IF(MONTH(fecha) = 10, total, 0)) AS oct,
         SUM(IF(MONTH(fecha) = 11, total, 0)) AS nov,
         SUM(IF(MONTH(fecha) = 12, total, 0)) AS dic 
-        FROM ventas WHERE fecha BETWEEN '$desde' AND '$hasta' AND tipo = 1 AND estado = 1";
-        return $this->select($sql);
+        FROM ventas WHERE fecha BETWEEN ? AND ? AND tipo = 1 AND estado = 1";
+        return $this->select($sql, [$desde, $hasta]);
     }
 
     public function ventasMes($desde, $hasta)
@@ -61,8 +58,8 @@ class AdminModel extends Query{
         SUM(IF(MONTH(fecha) = 10, total, 0)) AS oct,
         SUM(IF(MONTH(fecha) = 11, total, 0)) AS nov,
         SUM(IF(MONTH(fecha) = 12, total, 0)) AS dic 
-        FROM ventas WHERE fecha BETWEEN '$desde' AND '$hasta' AND tipo = 2 AND estado = 1";
-        return $this->select($sql);
+        FROM ventas WHERE fecha BETWEEN ? AND ? AND tipo = 2 AND estado = 1";
+        return $this->select($sql, [$desde, $hasta]);
     }
     
 }

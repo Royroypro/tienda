@@ -25,14 +25,14 @@
                 <div class="contact__widget">
                     <span class="icon_phone"></span>
                     <h4>Celular</h4>
-                    <p><?php echo $data['negocio']['telefono']; ?></p>
+                    <p><?php echo e($data['negocio']['telefono']); ?></p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 text-center">
                 <div class="contact__widget">
                     <span class="icon_pin_alt"></span>
                     <h4>Dirección</h4>
-                    <p><?php echo $data['negocio']['direccion']; ?></p>
+                    <p><?php echo e($data['negocio']['direccion']); ?></p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 text-center">
@@ -46,7 +46,7 @@
                 <div class="contact__widget">
                     <span class="icon_mail_alt"></span>
                     <h4>Email</h4>
-                    <p><?php echo $data['negocio']['correo']; ?></p>
+                    <p><?php echo e($data['negocio']['correo']); ?></p>
                 </div>
             </div>
         </div>
@@ -62,8 +62,8 @@
         <div class="inside-widget">
             <h4>Perú</h4>
             <ul>
-                <li>Cel: <?php echo $data['negocio']['telefono']; ?></li>
-                <li>Direccion: <?php echo $data['negocio']['direccion']; ?></li>
+                <li>Cel: <?php echo e($data['negocio']['telefono']); ?></li>
+                <li>Direccion: <?php echo e($data['negocio']['direccion']); ?></li>
             </ul>
         </div>
     </div>

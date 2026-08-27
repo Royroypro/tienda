@@ -10,7 +10,7 @@ class Ventas extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
         if (empty($_SESSION['tipo']) || $_SESSION['tipo'] == 2) {
             header('Location: '. BASE_URL . 'admin');
             exit;
@@ -36,7 +36,7 @@ class Ventas extends Controller
             $data[$i]['status'] = $data[$i]['estado'];
             $productos = $this->model->getDetalle($data[$i]['id']);
             for ($j = 0; $j < count($productos); $j++) {
-                $data[$i]['productos'] .= '<li class="list-group-item">' . $productos[$j]['cantidad'] . " x " . $productos[$j]['producto'] . " ------ " . $productos[$j]['precio'] . '</li>';
+                $data[$i]['productos'] .= '<li class="list-group-item">' . (int) $productos[$j]['cantidad'] . ' x ' . e($productos[$j]['producto']) . ' ------ ' . e($productos[$j]['precio']) . '</li>';
             }
             if ($data[$i]['estado'] == 0) {
                 $data[$i]['estado'] =  '<span class="badge badge-warning">CANCELADO</span>';
@@ -129,6 +129,7 @@ class Ventas extends Controller
 
     public function deleteCarrito($id)
     {
+        requirePost();
         $result = $this->cart->remove($id);
         if ($result) {
             $res = array('msg' => 'Producto eliminado', 'type' => 'success');
@@ -141,6 +142,7 @@ class Ventas extends Controller
 
     public function vaciarCarrito()
     {
+        requirePost();
         $this->cart->clear();
         if ($this->cart->isEmpty()) {
             $res = array('msg' => 'Carrito vaciado', 'type' => 'success');
@@ -240,6 +242,7 @@ class Ventas extends Controller
 
     public function anular($idVenta)
     {
+        requirePost();
         if (isset($_GET) && is_numeric($idVenta)) {
             $data = $this->model->anular($idVenta);
             if ($data == 1) {

@@ -12,14 +12,14 @@
 <body>
     <img src="<?php echo BASE_URL . 'public/img/logo.png'; ?>" alt="">
     <div class="datos-empresa">
-        <p><?php echo $data['empresa']['nombre']; ?></p>
-        <p><?php echo $data['empresa']['telefono']; ?></p>
-        <p><?php echo $data['empresa']['direccion']; ?></p>
+        <p><?php echo e($data['empresa']['nombre']); ?></p>
+        <p><?php echo e($data['empresa']['telefono']); ?></p>
+        <p><?php echo e($data['empresa']['direccion']); ?></p>
     </div>
     <h5 class="title">Datos del Cliente</h5>
     <div class="datos-info">
-        <p><strong>Cliente: </strong> <?php echo $data['venta']['nombre']; ?></p>
-        <p><strong>Fecha: </strong> <?php echo $data['venta']['fecha']; ?></p>
+        <p><strong>Cliente: </strong> <?php echo e($data['venta']['nombre']); ?></p>
+        <p><strong>Fecha: </strong> <?php echo e($data['venta']['fecha']); ?></p>
     </div>
     <h5 class="title">Detalle de los Productos</h5>
     <table>
@@ -35,8 +35,8 @@
             <?php
             foreach ($data['detalle'] as $producto) { ?>
                 <tr>
-                    <td><?php echo $producto['cantidad']; ?></td>
-                    <td><?php echo $producto['producto']; ?></td>
+                    <td><?php echo (int) $producto['cantidad']; ?></td>
+                    <td><?php echo e($producto['producto']); ?></td>
                     <td><?php echo number_format($producto['precio'], 2); ?></td>
                     <td><?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
                 </tr>

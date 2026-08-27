@@ -4,7 +4,7 @@ class Clientes extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
         if (empty($_SESSION['tipo']) || $_SESSION['tipo'] == 2) {
             header('Location: '. BASE_URL . 'admin');
             exit;
@@ -141,6 +141,7 @@ class Clientes extends Controller
 
     public function eliminar($idCliente)
     {
+        requirePost();
         if (isset($_GET) && is_numeric($idCliente)) {
             $data = $this->model->eliminar(0, $idCliente);
             if ($data > 0) {

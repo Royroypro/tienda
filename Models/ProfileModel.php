@@ -8,8 +8,7 @@ class ProfileModel extends Query{
 
     public function getUsuario($correo)
     {
-        $sql = "SELECT * FROM usuarios WHERE correo = '$correo' AND estado = 1";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM usuarios WHERE correo = ? AND estado = 1", [$correo]);
     }
     public function getCategorias()
     {
@@ -22,19 +21,16 @@ class ProfileModel extends Query{
     }
     public function getPedidos($id_usuario)
     {
-        $sql = "SELECT * FROM ventas WHERE id_usuario = $id_usuario";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM ventas WHERE id_usuario = ?", [(int) $id_usuario]);
     }
     public function getDetalle($id_venta)
     {
-        $sql = "SELECT * FROM detalle_ventas WHERE id_venta = $id_venta";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM detalle_ventas WHERE id_venta = ?", [(int) $id_venta]);
     }
 
-    public function getPedido($id)
+    public function getPedido($id, $idUsuario)
     {
-        $sql = "SELECT * FROM ventas WHERE id = $id";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM ventas WHERE id = ? AND id_usuario = ?", [(int) $id, (int) $idUsuario]);
     }
     
 }

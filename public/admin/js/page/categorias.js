@@ -92,7 +92,7 @@ function eliminarCat(idCat) {
         if (result.isConfirmed) {
             const url = base_url + "categorias/delete/" + idCat;
             const http = new XMLHttpRequest();
-            http.open("GET", url, true);
+            http.open("POST", url, true);
             http.send();
             http.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -111,7 +111,7 @@ function eliminarCat(idCat) {
 function editCat(idCat) {
     const url = base_url + "categorias/edit/" + idCat;
     const http = new XMLHttpRequest();
-    http.open("GET", url, true);
+    http.open("POST", url, true);
     http.send();
     http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {

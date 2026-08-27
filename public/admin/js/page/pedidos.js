@@ -42,7 +42,7 @@ function cambiarProceso(idPedido) {
     if (result.isConfirmed) {
       const url = base_url + "pedidos/update/" + idPedido;
       const http = new XMLHttpRequest();
-      http.open("GET", url, true);
+      http.open("POST", url, true);
       http.send();
       http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -61,7 +61,7 @@ function cambiarProceso(idPedido) {
 function verDireccion(idPedido) {
   const url = base_url + "profile/verPedido/" + idPedido;
   const http = new XMLHttpRequest();
-  http.open("GET", url, true);
+  http.open("POST", url, true);
   http.send();
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {

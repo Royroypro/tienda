@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <title>Ecommerce</title>
@@ -130,12 +131,15 @@
                             <li class="list-inline-item dropdown notification-list nav-user">
                                 <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <img src="<?php echo BASE_URL; ?>public/admin/images/users/avatar-6.jpg" alt="user" class="rounded-circle">
-                                    <span class="d-none d-md-inline-block ml-1"><?php echo $_SESSION['nombre_usuario']; ?><i class="mdi mdi-chevron-down"></i> </span>
+                                    <span class="d-none d-md-inline-block ml-1"><?php echo e($_SESSION['nombre_usuario']); ?><i class="mdi mdi-chevron-down"></i> </span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated profile-dropdown">
                                     <a class="dropdown-item" href="<?php echo BASE_URL . 'usuarios/perfil'; ?>"><i class="fas fa-user"></i> Perfil</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="<?php echo BASE_URL . 'admin/salir'; ?>"><i class="fas fa-power-off"></i> Logout</a>
+                                    <form method="post" action="<?php echo BASE_URL . 'admin/salir'; ?>">
+                                        <input type="hidden" name="_csrf" value="<?php echo e(csrfToken()); ?>">
+                                        <button class="dropdown-item" type="submit"><i class="fas fa-power-off"></i> Logout</button>
+                                    </form>
                                 </div>
                             </li>
 

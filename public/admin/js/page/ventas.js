@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (result.isConfirmed) {
         const url = base_url + "ventas/vaciarCarrito";
         const http = new XMLHttpRequest();
-        http.open("GET", url, true);
+        http.open("POST", url, true);
         http.send();
         http.onreadystatechange = function () {
           if (this.readyState == 4 && this.status == 200) {
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function agregarProducto(idProducto) {
   const url = base_url + "ventas/agregarProducto/" + idProducto;
   const http = new XMLHttpRequest();
-  http.open("GET", url, true);
+  http.open("POST", url, true);
   http.send();
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {

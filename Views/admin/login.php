@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <title>Login</title>
@@ -54,13 +55,13 @@
 
                                     <div class="form-group row">
                                         <div class="col-12">
-                                            <input class="form-control" id="email" name="email" type="text" required="" value="ana.info1999@gmail.com" placeholder="Usuario">
+                                            <input class="form-control" id="email" name="email" type="email" required="" value="" placeholder="Usuario">
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-12">
-                                            <input class="form-control" id="clave" name="clave" type="password" required="" value="123456789" placeholder="Password">
+                                            <input class="form-control" id="clave" name="clave" type="password" required="" value="" placeholder="Password">
                                         </div>
                                     </div>
 
@@ -92,6 +93,7 @@
 
     <!-- jQuery  -->
     <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.min.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/js/security.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/modernizr.min.js"></script>
     <script src="<?php echo BASE_URL; ?>public/admin/js/jquery.slimscroll.js"></script>

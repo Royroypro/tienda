@@ -7,36 +7,30 @@ class VentasModel extends Query{
     }
     public function getVentas($tipo)
     {
-        $sql = "SELECT * FROM ventas WHERE tipo = $tipo";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM ventas WHERE tipo = ?", [(int) $tipo]);
     }
     public function getDetalle($id_venta)
     {
-        $sql = "SELECT * FROM detalle_ventas WHERE id_venta = $id_venta";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM detalle_ventas WHERE id_venta = ?", [(int) $id_venta]);
     }
 
     public function buscarProducto($valor)
     {
-        $sql = "SELECT id, nombre, cantidad, precio FROM productos WHERE nombre LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT id, nombre, cantidad, precio FROM productos WHERE nombre LIKE ? AND estado = 1 LIMIT 10", ['%' . $valor . '%']);
     }
     public function getProducto($id_producto)
     {
-        $sql = "SELECT * FROM productos WHERE id = $id_producto";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM productos WHERE id = ?", [(int) $id_producto]);
     }
 
     public function getCliente($id_cliente)
     {
-        $sql = "SELECT * FROM usuarios WHERE id = $id_cliente";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM usuarios WHERE id = ?", [(int) $id_cliente]);
     }
 
     public function buscarCliente($valor)
     {
-        $sql = "SELECT * FROM usuarios WHERE nombre LIKE '%".$valor."%' AND tipo = 2 AND estado = 1 LIMIT 10";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM usuarios WHERE nombre LIKE ? AND tipo = 2 AND estado = 1 LIMIT 10", ['%' . $valor . '%']);
     }
 
     public function registrarVenta($total, $fecha, $cliente, $pago, $idusuario)
@@ -65,8 +59,7 @@ class VentasModel extends Query{
 
     public function getVenta($id)
     {
-        $sql = "SELECT * FROM ventas WHERE id = $id";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM ventas WHERE id = ?", [(int) $id]);
     }
 
     public function getNegocio()
@@ -77,8 +70,7 @@ class VentasModel extends Query{
 
     public function getDetalleVenta($id)
     {
-        $sql = "SELECT * FROM detalle_ventas WHERE id_venta = $id";
-        return $this->selectAll($sql);
+        return $this->selectAll("SELECT * FROM detalle_ventas WHERE id_venta = ?", [(int) $id]);
     }
     
 }

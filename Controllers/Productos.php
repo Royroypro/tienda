@@ -5,7 +5,7 @@ class Productos extends Controller
     public function __construct()
     {
         parent::__construct();
-        session_start();
+        startSecureSession();
         if (empty($_SESSION['tipo']) || $_SESSION['tipo'] == 2) {
             error_log("Usuario sin permisos: redirigiendo a 'admin'");
             header('Location: ' . BASE_URL . 'admin');
@@ -40,16 +40,15 @@ class Productos extends Controller
     {
         error_log("Intentando registrar producto...");
         if (isset($_POST['nombre']) && isset($_POST['precio'])) {
-            $nombre = $_POST['nombre'];
-            $precio = $_POST['precio'];
-            $cantidad = (!empty($_POST['cantidad'])) ? $_POST['cantidad'] : 0;
-            $descripcion = $_POST['descripcion'];
-            $categoria = $_POST['categoria'];
-            $fotoActual = $_POST['imagen_actual'];
-            $imagen = $_FILES['imagen'];
-            $tmp_name = $imagen['tmp_name'];
-            $id = $_POST['id'];
-            $nombreImg = date('YmdHis');
+            $nombre = strClean($_POST['nombre']);
+            $precio = filter_var($_POST['precio'], FILTER_VALIDATE_FLOAT);
+            $cantidad = filter_var($_POST['cantidad'] ?? 0, FILTER_VALIDATE_INT);
+            $descripcion = strClean($_POST['descripcion'] ?? '');
+            $categoria = filter_var($_POST['categoria'] ?? null, FILTER_VALIDATE_INT);
+            $fotoActual = basename((string) ($_POST['imagen_actual'] ?? ''));
+            $imagen = $_FILES['imagen'] ?? ['error' => UPLOAD_ERR_NO_FILE, 'name' => ''];
+            $tmp_name = $imagen['tmp_name'] ?? '';
+            $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
 
             error_log("Datos recibidos: nombre: $nombre, precio: $precio, cantidad: $cantidad");
 
@@ -68,15 +67,20 @@ class Productos extends Controller
                 die();
             }
 
-            if (empty($nombre) || empty($precio)) {
+            if (empty($nombre) || $precio === false || $precio < 0 || $cantidad === false || $cantidad < 0 || !$categoria) {
                 error_log("Campos vacíos: nombre o precio están vacíos");
                 $respuesta = array('msg' => 'todos los campos son requeridos', 'icono' => 'warning');
             } else {
                 ##### VERIFICAR IMG ACTUAL #####
                 $destino = null;
                 if (!empty($imagen['name'])) {
-                    $fecha = date('YmdHis');
-                    $destino = $fecha . '.jpg';
+                    try {
+                        $extension = validateUploadedImage($imagen);
+                        $destino = bin2hex(random_bytes(16)) . '.' . $extension;
+                    } catch (RuntimeException $e) {
+                        echo json_encode(['msg' => $e->getMessage(), 'icono' => 'error']);
+                        exit;
+                    }
                 } else if (!empty($fotoActual) && empty($imagen['name'])) {
                     $destino = $fotoActual;
                 }
@@ -96,9 +100,9 @@ class Productos extends Controller
                         if ($data > 0) {
                             #### GUARDAR IMAGEN #####
                             if (!empty($imagen['name'])) {
-                                $destino = 'public/img/productos/' . $nombreImg . '.jpg';
-                                if (move_uploaded_file($tmp_name, $destino)) {
-                                    error_log("Imagen guardada en: $destino");
+                                $rutaImagen = 'public/img/productos/' . $destino;
+                                if (move_uploaded_file($tmp_name, $rutaImagen)) {
+                                    error_log("Imagen guardada en: $rutaImagen");
                                 } else {
                                     error_log("Error al guardar la imagen");
                                     $respuesta = array('msg' => 'error al subir la imagen', 'icono' => 'error');
@@ -118,13 +122,14 @@ class Productos extends Controller
                     $data = $this->model->modificar($nombre, $descripcion, $precio, $cantidad, $destino, $categoria, $id);
                     if ($data == 1) {
                         if (!empty($imagen['name'])) {
-                            if (file_exists('public/img/productos/' . $temp['imagen'])) {
-                                unlink('public/img/productos/' . $temp['imagen']);
+                            $imagenAnterior = basename((string) $temp['imagen']);
+                            if ($imagenAnterior !== '' && file_exists('public/img/productos/' . $imagenAnterior)) {
+                                unlink('public/img/productos/' . $imagenAnterior);
                                 error_log("Imagen antigua eliminada: " . $temp['imagen']);
                             }
-                            $destino = 'public/img/productos/' . $nombreImg . '.jpg';
-                            if (move_uploaded_file($tmp_name, $destino)) {
-                                error_log("Imagen modificada y guardada en: $destino");
+                            $rutaImagen = 'public/img/productos/' . $destino;
+                            if (move_uploaded_file($tmp_name, $rutaImagen)) {
+                                error_log("Imagen modificada y guardada en: $rutaImagen");
                             } else {
                                 error_log("Error al subir la imagen");
                                 $respuesta = array('msg' => 'error al subir la imagen', 'icono' => 'error');
@@ -146,6 +151,7 @@ class Productos extends Controller
     //eliminar producto
     public function delete($idPro)
     {
+        requirePost();
         error_log("Eliminando producto con ID: $idPro");
         if (is_numeric($idPro)) {
             $data = $this->model->eliminar($idPro);

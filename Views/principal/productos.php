@@ -31,7 +31,7 @@
                                 <li>
                                     <div class="form-check form-check-inline">
                                         <input type="checkbox" class="categorias" name="categorias[]" id="<?php echo $categoria['id']; ?>" value="<?php echo $categoria['id']; ?>">
-                                        <label for="<?php echo $categoria['id']; ?>" class="form-check-label"><?php echo $categoria['categoria']; ?></label>
+                                        <label for="<?php echo (int) $categoria['id']; ?>" class="form-check-label"><?php echo e($categoria['categoria']); ?></label>
                                     </div>
                                 </li>
                             <?php } ?>
@@ -58,18 +58,18 @@
             <div class="col-lg-9 col-md-7">
                 <div class="row" id="content-productos">
                     <?php foreach ($data['productos'] as $producto) { ?>
-                        <div class="col-lg-3 col-md-4 col-sm-6 mix cat_<?php echo $producto['id_categoria']; ?> fresh-meat">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mix cat_<?php echo (int) $producto['id_categoria']; ?> fresh-meat">
                             <div class="featured__item">
-                                <div class="featured__item__pic set-bg" data-setbg="<?php echo BASE_URL . 'public/img/productos/' . $producto['imagen']; ?>">
+                                <div class="featured__item__pic set-bg" data-setbg="<?php echo BASE_URL . 'public/img/productos/' . rawurlencode(basename($producto['imagen'])); ?>">
                                     <ul class="featured__item__pic__hover">
-                                        <li><a href="https://api.whatsapp.com/send?phone=<?php echo $data['negocio']['whatsapp'] . '&text=Productos= ' . $producto['nombre'] . ' Precio(' . $producto['precio'] . ')' ; ?>"  target="_blank"><i class="fa fa-whatsapp"></i></a></li>
+                                        <li><a href="https://api.whatsapp.com/send?<?php echo http_build_query(['phone' => $data['negocio']['whatsapp'], 'text' => 'Producto: ' . $producto['nombre'] . ' Precio (' . $producto['precio'] . ')']); ?>" target="_blank" rel="noopener"><i class="fa fa-whatsapp"></i></a></li>
                                         <!-- <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
-                                        <li><a href="#" stock="<?php echo $producto['cantidad']; ?>" class="producto-agregar" id="<?php echo $producto['id']; ?>"><i class="fa fa-shopping-cart"></i></a></li>
+                                        <li><a href="#" stock="<?php echo (int) $producto['cantidad']; ?>" class="producto-agregar" id="<?php echo (int) $producto['id']; ?>"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
                                 <div class="featured__item__text">
-                                    <h6><a href="#"><?php echo $producto['nombre']; ?></a></h6>
-                                    <h5>S/<?php echo $producto['precio']; ?></h5>
+                                    <h6><a href="#"><?php echo e($producto['nombre']); ?></a></h6>
+                                    <h5>S/<?php echo e(number_format((float) $producto['precio'], 2)); ?></h5>
                                 </div>
                             </div>
                         </div>
@@ -104,6 +104,9 @@
     const maxamount = document.getElementById("maxamount");
     const contentproductos = document.querySelector('#content-productos');
     const contentpage = document.querySelector('#content-page');
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[character]);
     //filtro por categorias
     categorias.forEach(function(checkbox) {
         checkbox.addEventListener("click", function() {
@@ -134,18 +137,26 @@
                 const res = JSON.parse(this.responseText);
                 html = '';
                 res.productos.forEach(producto => {
-                    html += `<div class="col-lg-3 col-md-4 col-sm-6 mix cat_${producto.id_categoria} fresh-meat">
+                    const id = Number.parseInt(producto.id, 10);
+                    const categoria = Number.parseInt(producto.id_categoria, 10);
+                    const cantidad = Number.parseInt(producto.cantidad, 10);
+                    const nombre = escapeHtml(producto.nombre);
+                    const precio = escapeHtml(producto.precio);
+                    const imagen = encodeURIComponent(String(producto.imagen).replace(/[^a-zA-Z0-9._-]/g, ''));
+                    const whatsapp = encodeURIComponent(res.negocio.whatsapp);
+                    const texto = encodeURIComponent(`Producto: ${producto.nombre} Precio (${producto.precio})`);
+                    html += `<div class="col-lg-3 col-md-4 col-sm-6 mix cat_${categoria} fresh-meat">
                     <div class="featured__item">
-                        <div class="featured__item__pic set-bg" data-setbg="${ ruta + 'public/img/productos/' + producto.imagen }">
+                        <div class="featured__item__pic set-bg" data-setbg="${ruta + 'public/img/productos/' + imagen}">
                             <ul class="featured__item__pic__hover">
-                                <li><a href="https://api.whatsapp.com/send?phone=${ res.negocio.whatsapp + '&text=Productos= ' + producto.nombre +  ' Precio(' + producto.precio + ')' }" target="_blank"><i class="fa fa-whatsapp"></i></a></li>
+                                <li><a href="https://api.whatsapp.com/send?phone=${whatsapp}&text=${texto}" target="_blank" rel="noopener"><i class="fa fa-whatsapp"></i></a></li>
                                 <!-- <li><a href="#"><i class="fa fa-retweet"></i></a></li> -->
-                                <li><a href="#" stock="${producto.cantidad}" class="producto-agregar" id="${producto.id}"><i class="fa fa-shopping-cart"></i></a></li>
+                                <li><a href="#" stock="${cantidad}" class="producto-agregar" id="${id}"><i class="fa fa-shopping-cart"></i></a></li>
                             </ul>
                         </div>
                         <div class="featured__item__text">
-                            <h6><a href="#">${producto.nombre}</a></h6>
-                            <h5>S/${producto.precio}</h5>
+                            <h6><a href="#">${nombre}</a></h6>
+                            <h5>S/${precio}</h5>
                         </div>
                     </div>
                 </div>`;

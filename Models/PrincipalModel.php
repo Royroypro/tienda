@@ -7,8 +7,7 @@ class PrincipalModel extends Query{
     }
     public function getCategoria($nombre)
     {
-        $sql = "SELECT * FROM categorias WHERE categoria = '$nombre' AND estado = 1";
-        return $this->select($sql);
+        return $this->select("SELECT * FROM categorias WHERE categoria = ? AND estado = 1", [$nombre]);
     }
     public function getCategorias()
     {
@@ -23,12 +22,16 @@ class PrincipalModel extends Query{
     //paginacion
     public function getProductos($valor, $categoria, $desde, $porPagina)
     {
+        $desde = max(0, (int) $desde);
+        $porPagina = max(1, min(100, (int) $porPagina));
+        $params = ['%' . $valor . '%'];
         if(is_numeric($categoria)){
-            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE '%".$valor."%' AND p.id_categoria = $categoria AND p.estado = 1 ORDER BY p.id DESC LIMIT $desde, $porPagina";
+            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE ? AND p.id_categoria = ? AND p.estado = 1 ORDER BY p.id DESC LIMIT $desde, $porPagina";
+            $params[] = (int) $categoria;
         }else{
-            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE '%".$valor."%' AND p.estado = 1 ORDER BY p.id DESC LIMIT $desde, $porPagina";
+            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE ? AND p.estado = 1 ORDER BY p.id DESC LIMIT $desde, $porPagina";
         }        
-        return $this->selectAll($sql);
+        return $this->selectAll($sql, $params);
     }
 
     public function getTotalProductos($busqueda, $categoria)
@@ -37,13 +40,13 @@ class PrincipalModel extends Query{
             if (empty($busqueda)) {
                 $sql = "SELECT COUNT(*) AS total FROM productos WHERE estado = 1";
             } else {
-                $sql = "SELECT COUNT(*) AS total FROM productos WHERE nombre LIKE '%".$busqueda."%' AND estado = 1";
+                return $this->select("SELECT COUNT(*) AS total FROM productos WHERE nombre LIKE ? AND estado = 1", ['%' . $busqueda . '%']);
             }          
         }else{
             if (empty($busqueda)) {
-                $sql = "SELECT COUNT(*) AS total FROM productos WHERE id_categoria = $categoria AND estado = 1";
+                return $this->select("SELECT COUNT(*) AS total FROM productos WHERE id_categoria = ? AND estado = 1", [(int) $categoria]);
             } else {
-                $sql = "SELECT COUNT(*) AS total FROM productos WHERE nombre LIKE '%".$busqueda."%' AND id_categoria = $categoria AND estado = 1";
+                return $this->select("SELECT COUNT(*) AS total FROM productos WHERE nombre LIKE ? AND id_categoria = ? AND estado = 1", ['%' . $busqueda . '%', (int) $categoria]);
             }
             
         }
@@ -52,32 +55,37 @@ class PrincipalModel extends Query{
 
     public function getFiltroProductos($busqueda, $categorias, $desde, $hasta)
     {
+        $params = ['%' . $busqueda . '%'];
         if (empty($categorias)) {
-            $sql = "SELECT * FROM productos WHERE nombre LIKE '%".$busqueda."%' AND precio >= $desde
-            AND precio <= $hasta";
+            $sql = "SELECT * FROM productos WHERE nombre LIKE ? AND precio >= ? AND precio <= ?";
+            $params[] = (float) $desde;
+            $params[] = (float) $hasta;
         }else{
-            $sql = "SELECT * FROM productos WHERE nombre LIKE '%".$busqueda."%' AND id_categoria IN ($categorias)
-        AND precio >= $desde
-        AND precio <= $hasta";
+            $ids = array_values(array_filter(array_map('intval', preg_split('/[^0-9]+/', (string) $categorias))));
+            if (empty($ids)) {
+                return [];
+            }
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $sql = "SELECT * FROM productos WHERE nombre LIKE ? AND id_categoria IN ($placeholders) AND precio >= ? AND precio <= ?";
+            $params = array_merge($params, $ids, [(float) $desde, (float) $hasta]);
         }
-        
-        return $this->selectAll($sql);
+        return $this->selectAll($sql, $params);
     }
 
     public function getProductosCategoria($valor, $categoria)
     {
         if(is_numeric($categoria)){
-            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE '%".$valor."%' AND p.id_categoria = $categoria AND p.estado = 1 ORDER BY p.id DESC";
+            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE ? AND p.id_categoria = ? AND p.estado = 1 ORDER BY p.id DESC";
+            return $this->selectAll($sql, ['%' . $valor . '%', (int) $categoria]);
         }else{
-            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE '%".$valor."%' AND p.estado = 1 ORDER BY p.id DESC";
+            $sql = "SELECT p.id, p.nombre, p.precio, p.cantidad, p.imagen, p.id_categoria, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id WHERE p.nombre LIKE ? AND p.estado = 1 ORDER BY p.id DESC";
+            return $this->selectAll($sql, ['%' . $valor . '%']);
         }  
-        return $this->selectAll($sql);      
     }
 
     public function getProducto($id)
     {
-        $sql = "SELECT * FROM productos WHERE id = $id";      
-        return $this->select($sql);
+        return $this->select("SELECT * FROM productos WHERE id = ?", [(int) $id]);
     }
 
     public function topProductos()
@@ -94,6 +102,9 @@ class PrincipalModel extends Query{
 
     public function getPrecio($tipo)
     {
+        if (!in_array($tipo, ['MAX(precio)', 'MIN(precio)'], true)) {
+            throw new InvalidArgumentException('Agregado no permitido');
+        }
         $sql = "SELECT $tipo AS total FROM productos WHERE estado = 1";
         return $this->select($sql);
     }
@@ -105,12 +116,12 @@ class PrincipalModel extends Query{
 
     public function verificarCorreo($correo, $tipo)
     {
-        return $this->select("SELECT * FROM usuarios WHERE correo = '$correo' AND estado = 1");
+        return $this->select("SELECT * FROM usuarios WHERE correo = ? AND estado = 1", [$correo]);
     }
 
     public function verificarToken($token)
     {
-        return $this->select("SELECT * FROM usuarios WHERE token = '$token' AND estado = 1");
+        return $this->select("SELECT * FROM usuarios WHERE token = ? AND estado = 1", [$token]);
     }
 
     public function registrarToken($token, $correo){

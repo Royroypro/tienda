@@ -5,12 +5,12 @@
       <div class="col-lg-3 col-md-6 col-sm-6">
         <div class="footer__about">
           <div class="footer__about__logo">
-            <a href="<?php echo BASE_URL; ?>"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="" width="50"></a>
+            <a href="<?php echo BASE_URL; ?>"><img src="<?php echo BASE_URL; ?>public/img/logo.png" alt="Seguridad Electrónica Huacho" width="50"></a>
           </div>
           <ul>
-            <li>Direccion: <?php echo $data['negocio']['direccion']; ?></li>
-            <li>Cel: <?php echo $data['negocio']['telefono']; ?></li>
-            <li>Email: <?php echo $data['negocio']['correo']; ?></li>
+            <li>Direccion: <?php echo e($data['negocio']['direccion']); ?></li>
+            <li>Cel: <?php echo e($data['negocio']['telefono']); ?></li>
+            <li>Email: <?php echo e($data['negocio']['correo']); ?></li>
           </ul>
         </div>
       </div>
@@ -48,19 +48,29 @@
             <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
               Copyright &copy;<script>
                 document.write(new Date().getFullYear());
-              </script> Todos los derechos reservados |  <i class="fa fa-heart" aria-hidden="true"></i> por <?php echo $data['negocio']['nombre']; ?>
+              </script> Todos los derechos reservados |  <i class="fa fa-heart" aria-hidden="true"></i> por <?php echo e($data['negocio']['nombre']); ?>
               <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
           </div>
-          <div class="footer__copyright__payment"><img src="<?php echo BASE_URL; ?>public/img/payment-item.png" alt=""></div>
+          <div class="footer__purchase-note"><i class="fa fa-whatsapp"></i> Pedidos y coordinación por WhatsApp</div>
         </div>
       </div>
     </div>
   </div>
 </footer>
 <!-- Footer Section End -->
+<?php
+$floatingWhatsapp = preg_replace('/\D+/', '', (string) ($data['negocio']['whatsapp'] ?? ''));
+$floatingMessage = 'Hola, deseo información sobre sus productos y servicios de seguridad.';
+?>
+<?php if ($floatingWhatsapp !== '') { ?>
+  <a class="floating-whatsapp" href="https://api.whatsapp.com/send?<?php echo e(http_build_query(['phone' => $floatingWhatsapp, 'text' => $floatingMessage])); ?>" target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp">
+    <i class="fa fa-whatsapp" aria-hidden="true"></i><span>Consultar</span>
+  </a>
+<?php } ?>
 
 <!-- Js Plugins -->
 <script src="<?php echo BASE_URL; ?>public/js/jquery-3.3.1.min.js"></script>
+<script src="<?php echo BASE_URL; ?>public/js/security.js"></script>
 <script src="<?php echo BASE_URL; ?>public/js/bootstrap.min.js"></script>
 <script src="<?php echo BASE_URL; ?>public/js/jquery.nice-select.min.js"></script>
 <script src="<?php echo BASE_URL; ?>public/js/jquery-ui.min.js"></script>
